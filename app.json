@@ -1,5 +1,6 @@
 {
   "expo": {
+    "scheme": "product-manager",
     "name": "product-management-app",
     "slug": "product-management-app",
     "version": "1.0.0",
