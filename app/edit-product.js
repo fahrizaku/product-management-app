@@ -14,7 +14,7 @@ import { useRouter, useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { getProduct, updateProduct } from "../services/api";
-import { triggerGlobalRefresh } from "../hooks/useProducts";
+import { triggerGlobalRefresh } from "../utils/globalRefresh";
 
 export default function EditProduct() {
   const [formData, setFormData] = useState({
@@ -89,6 +89,7 @@ export default function EditProduct() {
       });
 
       // Trigger global refresh
+      console.log("Triggering global refresh from edit-product");
       triggerGlobalRefresh();
 
       Alert.alert("Berhasil", "Produk berhasil diperbarui", [

@@ -1,21 +1,15 @@
 import { useState, useEffect, useCallback } from "react";
 import { getProducts, deleteProduct } from "../services/api";
-
-// Global state untuk trigger refresh
-let refreshTrigger = 0;
-const refreshCallbacks = new Set();
-
-export const triggerGlobalRefresh = () => {
-  refreshTrigger += 1;
-  refreshCallbacks.forEach((callback) => callback());
-};
+import { useGlobalRefresh } from "../utils/globalRefresh";
 
 export const useProducts = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
-  const [localRefreshTrigger, setLocalRefreshTrigger] = useState(0);
+
+  // Use centralized global refresh system
+  const globalRefreshTrigger = useGlobalRefresh();
 
   const loadProducts = useCallback(async (showRefreshing = false) => {
     try {
@@ -26,8 +20,10 @@ export const useProducts = () => {
       }
       setError(null);
 
+      console.log("Loading products...");
       const data = await getProducts();
       setProducts(data);
+      console.log("Products loaded:", data.length);
     } catch (err) {
       setError(err.message);
       console.error("Error loading products:", err);
@@ -48,23 +44,14 @@ export const useProducts = () => {
     }
   }, []);
 
-  // Setup global refresh listener
+  // Load products on mount and when global refresh triggered
   useEffect(() => {
-    const refreshCallback = () => {
-      setLocalRefreshTrigger((prev) => prev + 1);
-    };
-
-    refreshCallbacks.add(refreshCallback);
-
-    return () => {
-      refreshCallbacks.delete(refreshCallback);
-    };
-  }, []);
-
-  // Load products on mount and when refresh triggered
-  useEffect(() => {
+    console.log(
+      "useProducts: globalRefreshTrigger changed:",
+      globalRefreshTrigger
+    );
     loadProducts();
-  }, [loadProducts, localRefreshTrigger]);
+  }, [loadProducts, globalRefreshTrigger]);
 
   return {
     products,

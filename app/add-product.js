@@ -13,7 +13,7 @@ import {
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { addProduct } from "../services/api";
-import { triggerGlobalRefresh } from "../hooks/useProducts";
+import { triggerGlobalRefresh } from "../utils/globalRefresh";
 
 export default function AddProduct() {
   const [formData, setFormData] = useState({
@@ -62,6 +62,7 @@ export default function AddProduct() {
       });
 
       // Trigger global refresh
+      console.log("Triggering global refresh from add-product");
       triggerGlobalRefresh();
 
       Alert.alert("Berhasil", "Produk berhasil ditambahkan", [

@@ -12,6 +12,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { getProduct, deleteProduct } from "../services/api";
 import { formatCurrency } from "../utils/formatCurrency";
+import { triggerGlobalRefresh, useGlobalRefresh } from "../utils/globalRefresh";
 
 export default function ProductDetail() {
   const [product, setProduct] = useState(null);
@@ -19,17 +20,16 @@ export default function ProductDetail() {
   const router = useRouter();
   const { id } = useLocalSearchParams();
 
-  useEffect(() => {
-    if (id) {
-      loadProduct();
-    }
-  }, [id]);
+  // Use centralized global refresh system
+  const globalRefreshTrigger = useGlobalRefresh();
 
   const loadProduct = async () => {
     try {
       setPageLoading(true);
+      console.log("Loading product detail for ID:", id);
       const data = await getProduct(id);
       setProduct(data);
+      console.log("Product detail loaded:", data);
     } catch (error) {
       Alert.alert("Error", error.message || "Gagal memuat data produk", [
         { text: "OK", onPress: () => router.back() },
@@ -38,6 +38,17 @@ export default function ProductDetail() {
       setPageLoading(false);
     }
   };
+
+  // Load product on mount and when global refresh triggered
+  useEffect(() => {
+    if (id) {
+      console.log(
+        "ProductDetail: globalRefreshTrigger changed:",
+        globalRefreshTrigger
+      );
+      loadProduct();
+    }
+  }, [id, globalRefreshTrigger]);
 
   const handleEdit = () => {
     router.push(`/edit-product?id=${id}`);
@@ -65,7 +76,9 @@ export default function ProductDetail() {
         {
           text: "OK",
           onPress: () => {
-            // Redirect ke home page dan auto-refresh
+            // Trigger global refresh before navigating back
+            console.log("Triggering global refresh from product-detail delete");
+            triggerGlobalRefresh();
             router.replace("/");
           },
         },
