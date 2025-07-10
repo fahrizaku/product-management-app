@@ -2,7 +2,7 @@
 import axios from "axios";
 
 // DEVELOPMENT - localhost (ganti sesuai IP laptop Anda jika testing di device)
-const API_BASE_URL = "http://192.168.2.110:3000/api";
+const API_BASE_URL = "http://103.67.79.200:3001/api";
 
 // PRODUCTION - VPS (uncomment saat deploy)
 // const API_BASE_URL = 'https://your-vps-server.com/api';
