@@ -10,6 +10,7 @@
     "reset": "expo start --clear"
   },
   "dependencies": {
+    "@react-navigation/native": "^7.1.14",
     "axios": "^1.10.0",
     "expo": "~53.0.17",
     "expo-router": "^5.1.3",

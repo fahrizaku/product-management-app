@@ -1,4 +1,3 @@
-// app/product-detail.js
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -8,7 +7,7 @@ import {
   Alert,
   ScrollView,
 } from "react-native";
-import { useRouter, useSearchParams } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { getProduct, deleteProduct } from "../services/api";
@@ -16,17 +15,19 @@ import { formatCurrency } from "../utils/formatCurrency";
 
 export default function ProductDetail() {
   const [product, setProduct] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [pageLoading, setPageLoading] = useState(true);
   const router = useRouter();
-  const { id } = useSearchParams();
+  const { id } = useLocalSearchParams();
 
   useEffect(() => {
-    loadProduct();
-  }, []);
+    if (id) {
+      loadProduct();
+    }
+  }, [id]);
 
   const loadProduct = async () => {
     try {
-      setLoading(true);
+      setPageLoading(true);
       const data = await getProduct(id);
       setProduct(data);
     } catch (error) {
@@ -34,7 +35,7 @@ export default function ProductDetail() {
         { text: "OK", onPress: () => router.back() },
       ]);
     } finally {
-      setLoading(false);
+      setPageLoading(false);
     }
   };
 
@@ -61,7 +62,13 @@ export default function ProductDetail() {
     try {
       await deleteProduct(id);
       Alert.alert("Berhasil", "Produk berhasil dihapus", [
-        { text: "OK", onPress: () => router.back() },
+        {
+          text: "OK",
+          onPress: () => {
+            // Redirect ke home page dan auto-refresh
+            router.replace("/");
+          },
+        },
       ]);
     } catch (error) {
       Alert.alert("Error", error.message || "Gagal menghapus produk");
@@ -74,7 +81,7 @@ export default function ProductDetail() {
     return { text: "Tersedia", color: "#34C759" };
   };
 
-  if (loading) {
+  if (pageLoading) {
     return <LoadingSpinner message="Memuat detail produk..." />;
   }
 

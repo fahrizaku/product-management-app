@@ -1,4 +1,3 @@
-// app/add-product.js
 import React, { useState } from "react";
 import {
   View,
@@ -14,6 +13,7 @@ import {
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { addProduct } from "../services/api";
+import { triggerGlobalRefresh } from "../hooks/useProducts";
 
 export default function AddProduct() {
   const [formData, setFormData] = useState({
@@ -61,8 +61,14 @@ export default function AddProduct() {
         stock: parseInt(formData.stock),
       });
 
+      // Trigger global refresh
+      triggerGlobalRefresh();
+
       Alert.alert("Berhasil", "Produk berhasil ditambahkan", [
-        { text: "OK", onPress: () => router.back() },
+        {
+          text: "OK",
+          onPress: () => router.back(),
+        },
       ]);
     } catch (error) {
       Alert.alert("Error", error.message || "Gagal menambahkan produk");

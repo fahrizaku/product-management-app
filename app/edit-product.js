@@ -1,4 +1,3 @@
-// app/edit-product.js
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -11,10 +10,11 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
-import { useRouter, useSearchParams } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { getProduct, updateProduct } from "../services/api";
+import { triggerGlobalRefresh } from "../hooks/useProducts";
 
 export default function EditProduct() {
   const [formData, setFormData] = useState({
@@ -23,30 +23,32 @@ export default function EditProduct() {
     stock: "",
   });
   const [loading, setLoading] = useState(false);
-  const [initialLoading, setInitialLoading] = useState(true);
+  const [pageLoading, setPageLoading] = useState(true);
   const [errors, setErrors] = useState({});
   const router = useRouter();
-  const { id } = useSearchParams();
+  const { id } = useLocalSearchParams();
 
   useEffect(() => {
-    loadProduct();
-  }, []);
+    if (id) {
+      loadProduct();
+    }
+  }, [id]);
 
   const loadProduct = async () => {
     try {
-      setInitialLoading(true);
+      setPageLoading(true);
       const product = await getProduct(id);
       setFormData({
-        name: product.name,
-        price: product.price.toString(),
-        stock: product.stock.toString(),
+        name: product.name || "",
+        price: product.price ? product.price.toString() : "",
+        stock: product.stock ? product.stock.toString() : "",
       });
     } catch (error) {
       Alert.alert("Error", error.message || "Gagal memuat data produk", [
         { text: "OK", onPress: () => router.back() },
       ]);
     } finally {
-      setInitialLoading(false);
+      setPageLoading(false);
     }
   };
 
@@ -86,8 +88,14 @@ export default function EditProduct() {
         stock: parseInt(formData.stock),
       });
 
+      // Trigger global refresh
+      triggerGlobalRefresh();
+
       Alert.alert("Berhasil", "Produk berhasil diperbarui", [
-        { text: "OK", onPress: () => router.back() },
+        {
+          text: "OK",
+          onPress: () => router.back(),
+        },
       ]);
     } catch (error) {
       Alert.alert("Error", error.message || "Gagal memperbarui produk");
@@ -103,7 +111,7 @@ export default function EditProduct() {
     }
   };
 
-  if (initialLoading) {
+  if (pageLoading) {
     return <LoadingSpinner message="Memuat data produk..." />;
   }
 
