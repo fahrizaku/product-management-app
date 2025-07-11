@@ -1,13 +1,13 @@
-// app/_layout.js
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { StyleSheet, View } from "react-native";
 
 export default function RootLayout() {
   return (
-    <>
+    <View style={styles.container}>
       <Stack
         screenOptions={{
-          headerShown: false, // Hide header untuk tab navigation
+          headerShown: false,
         }}
       >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -57,6 +57,12 @@ export default function RootLayout() {
         />
       </Stack>
       <StatusBar style="light" />
-    </>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
