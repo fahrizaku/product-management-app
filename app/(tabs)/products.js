@@ -1,3 +1,4 @@
+// app/(tabs)/products.js
 import React, { useState, useMemo, useRef } from "react";
 import {
   View,
@@ -95,7 +96,7 @@ export default function ProductList() {
         <TouchableOpacity
           style={[
             styles.fab,
-            { bottom: 60 + Math.max(insets.bottom, 16) + 20 },
+            { bottom: 80 + Math.max(insets.bottom, 24) + 20 },
           ]}
           onPress={handleAddProduct}
         >
@@ -175,7 +176,7 @@ export default function ProductList() {
               ? styles.emptyContainer
               : [
                   styles.listContainer,
-                  { paddingBottom: 60 + Math.max(insets.bottom, 16) + 100 },
+                  { paddingBottom: 80 + Math.max(insets.bottom, 24) + 100 },
                 ]
           }
           ListEmptyComponent={
@@ -203,7 +204,7 @@ export default function ProductList() {
         <TouchableOpacity
           style={[
             styles.fab,
-            { bottom: 60 + Math.max(insets.bottom, 16) + 20 },
+            { bottom: 80 + Math.max(insets.bottom, 24) + 20 },
           ]}
           onPress={handleAddProduct}
         >
